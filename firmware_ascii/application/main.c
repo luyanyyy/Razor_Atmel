@@ -41,6 +41,7 @@ the 1ms period.
 
 void main(void)
 {
+  u8 u8MyData=0;
   G_u32SystemFlags |= _SYSTEM_INITIALIZING;
 
   /* Low level initialization */
@@ -84,6 +85,7 @@ void main(void)
   while(1)
   {
     WATCHDOG_BONE();
+    u8MyData++;
     
     /* Drivers */
     LedUpdate();
