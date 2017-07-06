@@ -39,11 +39,36 @@ contraints but must complete execution regardless of success or failure of start
 the 1ms period.
 ***********************************************************************************************************************/
 
+
+
+
+
+u16 u16NumBit,u16NumBit1;
+u16 u16NumBit=0x1234;
+u16 u16NumBit1=0x1234;
+void set_bit(void)
+{
+u16NumBit|=_BIT;
+} 
+void clear_bit(void)
+{
+ u16NumBit1&=~(_BIT1);
+}
+
+
+
+
+
+
+
+
+
 void main(void)
 {
   u8 u8MyData=0;
   G_u32SystemFlags |= _SYSTEM_INITIALIZING;
-
+clear_bit();
+set_bit();
   /* Low level initialization */
   WatchDogSetup(); /* During development, does not reset processor if timeout */
   GpioSetup();

@@ -20,6 +20,8 @@ Header file for main.c.
 /***********************************************************************************************************************
 * Constant Definitions
 ***********************************************************************************************************************/
+#define _BIT (0x01<<8)
+#define _BIT1 (0x01<<8)
 /* G_u32ApplicationFlags definitions are in configuration.h */
 
 /* G_u32SystemFlags */
@@ -42,6 +44,6 @@ Header file for main.c.
 Function Declarations
 **********************************************************************************************************************/
 void Timer1CallBack(void);
-
-
+void set_bit(void);
+void clear_bit(void);
 #endif /* __MAIN_H */
