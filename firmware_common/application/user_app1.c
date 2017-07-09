@@ -136,43 +136,49 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
- static u32 u32Counter1=0;
+static u32 u32Counter1=0;
 static u32 u32Counter=0;
 static u32 u32Time=0;
 static bool bLighton=FALSE;
-static u32 u32CounterLimitMS=512;
-u32Counter++;
+static u32 u32CounterLimitMSon=1;
+static u32 u32CounterLimitMSoff=51;
+z1u32Counter++;
 u32Time++;
-if(u32Counter==u32CounterLimitMS)
-{
-u32Counter=0;
 if(bLighton)
 {
-HEARTBEAT_OFF();
+  if(u32Counter==u32CounterLimitMSon)
+  {
+  u32Counter=0;
+  HEARTBEAT_OFF();
+  bLighton=!bLighton;
+  }
 }
-else
+  if(u32Counter==u32CounterLimitMSoff)
+  {
+  u32Counter=0;
+  HEARTBEAT_ON();
+  bLighton=!bLighton;
+  }
+  if(u32Time==104)
 {
- HEARTBEAT_ON();
-}
-bLighton=!bLighton;
-}
-
-if(u32Time==2000)
+  u32Time=0;
+  u32Counter1++;
+if((u32Counter1>0)&&(u32Counter1<=10))
 {
-u32Counter=0;
-u32Time=0;
-u32Counter1++;
-if(u32Counter1>0&&u32Counter1<=9)
-{
-  u32CounterLimitMS/=2;
+ u32CounterLimitMSon+=5;
+ u32CounterLimitMSoff-=5;
+ u32Counter=0;
 }
-if(u32Counter1>9&&u32Counter1<19)
+if((u32Counter1>10)&&(u32Counter1<=20))
 {
-  u32CounterLimitMS*=2;
+ u32CounterLimitMSon-=5;
+ u32CounterLimitMSoff+=5;
+ u32Counter=0;
 }
-if(u32Counter1==19) 
+if(u32Counter1==21) 
 {
   u32Counter1=0;
+  u32Counter=0;
 }
 }
 
