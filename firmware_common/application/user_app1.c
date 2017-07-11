@@ -137,7 +137,30 @@ State Machine Function Definitions
 /* Wait for a message to be queued */
 static void UserApp1SM_Idle(void)
 {
- 
+ //0到40的亮度变化
+static u16 u16Counter=0;                                                        
+    static LedRateType eLedDutyLevel=LED_PWM_0;
+    u16Counter++;
+    
+    if(u16Counter==40)
+    {
+        LedPWM(WHITE,eLedDutyLevel);
+        u16Counter=0;
+        
+        if(eLedDutyLevel<LED_PWM_PERIOD)
+        {
+           eLedDutyLevel++; 
+        }
+        else
+        {
+          
+            if(eLedDutyLevel>LED_PWM_0)
+            {
+                eLedDutyLevel--;
+            }    
+        }       
+}
+
   }
 
 /* end UserAppSM_Idle() */
