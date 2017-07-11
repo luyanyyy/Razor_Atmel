@@ -87,7 +87,7 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
- 
+  
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -134,63 +134,86 @@ State Machine Function Definitions
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Wait for ??? */
+/* Wait for a message to be queued */
 static void UserApp1SM_Idle(void)
 {
-static u32 u32Counter1=0;
-static u32 u32Counter=0;
-static u32 u32Time=0;
-static bool bLighton=FALSE;
-static u32 u32CounterLimitMSon=1;
-static u32 u32CounterLimitMSoff=51;
-z1u32Counter++;
-u32Time++;
-if(bLighton)
-{
-  if(u32Counter==u32CounterLimitMSon)
+ static u16 u16Counter;
+  static u8 u8ColourType=7;
+  static u8 u8DutyLevel=0;
+  
+  u16Counter++;
+  
+  if(u16Counter==100)//1s
   {
-  u32Counter=0;
-  HEARTBEAT_OFF();
-  bLighton=!bLighton;
-  }
-}
-  if(u32Counter==u32CounterLimitMSoff)
-  {
-  u32Counter=0;
-  HEARTBEAT_ON();
-  bLighton=!bLighton;
-  }
-  if(u32Time==104)
-{
-  u32Time=0;
-  u32Counter1++;
-if((u32Counter1>0)&&(u32Counter1<=10))
-{
- u32CounterLimitMSon+=5;
- u32CounterLimitMSoff-=5;
- u32Counter=0;
-}
-if((u32Counter1>10)&&(u32Counter1<=20))
-{
- u32CounterLimitMSon-=5;
- u32CounterLimitMSoff+=5;
- u32Counter=0;
-}
-if(u32Counter1==21) 
-{
-  u32Counter1=0;
-  u32Counter=0;
-}
-}
+    u16Counter=0;
+    
+    switch(u8ColourType)
+    {
+      case 1:
+        LedPWM(LCD_RED,LED_PWM_100);
+        LedPWM(LCD_GREEN,u8DutyLevel);
+        u8DutyLevel++;
+        break;
+        
+      case 2:
+        LedPWM(LCD_GREEN,LED_PWM_100);
+        LedPWM(LCD_RED,u8DutyLevel);
+        u8DutyLevel--;
+        break;
+        
+      case 3:
+        LedPWM(LCD_GREEN,LED_PWM_100);
+        LedPWM(LCD_BLUE,u8DutyLevel);
+        u8DutyLevel++;
+        break;
+        
+      case 4:
+        LedPWM(LCD_BLUE,LED_PWM_100);
+        LedPWM(LCD_GREEN,u8DutyLevel);
+        u8DutyLevel--;
+        break;
+        
+      case 5:
+        LedPWM(LCD_BLUE,LED_PWM_100);
+        LedPWM(LCD_RED,u8DutyLevel);
+        u8DutyLevel++;
+        break;
+        
+      case 6:
+        LedPWM(LCD_RED,LED_PWM_100);
+        LedPWM(LCD_BLUE,u8DutyLevel);
+        u8DutyLevel--;
+        
+    case 7:
+       LedOff(RED);
+        LedOff(GREEN);
+        LedOff(BLUE);
+        u8ColourType=0;
+
+        break;
+    default:
+      break;
+    }
+    
+     if((u8DutyLevel==LED_PWM_100)||(u8DutyLevel==0))
+      {
+        u8ColourType++;
+      }
+   
 
 }
-/* end UserApp1SM_Idle() */
+  }
+
+/* end UserAppSM_Idle() */
+
+
     
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Handle an error */
 static void UserApp1SM_Error(void)          
 {
-  
+ 
 } /* end UserApp1SM_Error() */
 
 

@@ -25,7 +25,12 @@ extern volatile u32 G_u32SystemTime1s;                 /* From board-specific so
 Global variable definitions with scope limited to this local application.
 Variable names shall start with "Main_" and be declared as static.
 ***********************************************************************************************************************/
-
+typedef struct
+{
+  u8 u8ServerNumber;                    /* Unique token for this item */
+  DrinkType asServingTray[MAX_DRINKS];  /* Data payload array */
+  void* psNextServer;                   /* Pointer to next ServerType*/
+} ServerType;
 
 /***********************************************************************************************************************
 Main Program
@@ -69,7 +74,35 @@ void main(void)
   G_u32SystemFlags |= _SYSTEM_INITIALIZING;
 clear_bit();
 set_bit();
-  /* Low level initialization */
+
+
+
+
+u8 u8Test=0xA5;
+u8*pu8Example;
+u32 u32Test=0x0000ffff;
+u32*pu32Example;
+pu8Example=&u8Test;
+pu32Example=&u32Test;
+*pu8Example+=1;
+(*pu32Example)++;
+pu8Example++;
+*pu32Example++; 
+
+
+
+u8 u8CurrentServer;
+ServerType sServer1;
+ServerType* psServerParser;
+
+psServerParser = &sServer1;
+sServer1.u8ServerNumber = 18;
+u8CurrentServer = psServerParser->u8ServerNumber;
+
+
+
+
+  /* Low level initial;ization */
   WatchDogSetup(); /* During development, does not reset processor if timeout */
   GpioSetup();
   ClockSetup();
@@ -133,9 +166,9 @@ set_bit();
     UserApp3RunActiveState();
     
     /* System sleep*/
-    HEARTBEAT_OFF();
+   // HEARTBEAT_OFF();
     SystemSleep();
-    HEARTBEAT_ON();
+   // HEARTBEAT_ON();
     
   } /* end while(1) main super loop */
   
