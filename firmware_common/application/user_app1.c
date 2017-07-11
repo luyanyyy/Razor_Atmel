@@ -137,71 +137,7 @@ State Machine Function Definitions
 /* Wait for a message to be queued */
 static void UserApp1SM_Idle(void)
 {
- static u16 u16Counter;
-  static u8 u8ColourType=7;
-  static u8 u8DutyLevel=0;
-  
-  u16Counter++;
-  
-  if(u16Counter==100)//1s
-  {
-    u16Counter=0;
-    
-    switch(u8ColourType)
-    {
-      case 1:
-        LedPWM(LCD_RED,LED_PWM_100);
-        LedPWM(LCD_GREEN,u8DutyLevel);
-        u8DutyLevel++;
-        break;
-        
-      case 2:
-        LedPWM(LCD_GREEN,LED_PWM_100);
-        LedPWM(LCD_RED,u8DutyLevel);
-        u8DutyLevel--;
-        break;
-        
-      case 3:
-        LedPWM(LCD_GREEN,LED_PWM_100);
-        LedPWM(LCD_BLUE,u8DutyLevel);
-        u8DutyLevel++;
-        break;
-        
-      case 4:
-        LedPWM(LCD_BLUE,LED_PWM_100);
-        LedPWM(LCD_GREEN,u8DutyLevel);
-        u8DutyLevel--;
-        break;
-        
-      case 5:
-        LedPWM(LCD_BLUE,LED_PWM_100);
-        LedPWM(LCD_RED,u8DutyLevel);
-        u8DutyLevel++;
-        break;
-        
-      case 6:
-        LedPWM(LCD_RED,LED_PWM_100);
-        LedPWM(LCD_BLUE,u8DutyLevel);
-        u8DutyLevel--;
-        
-    case 7:
-       LedOff(RED);
-        LedOff(GREEN);
-        LedOff(BLUE);
-        u8ColourType=0;
-
-        break;
-    default:
-      break;
-    }
-    
-     if((u8DutyLevel==LED_PWM_100)||(u8DutyLevel==0))
-      {
-        u8ColourType++;
-      }
-   
-
-}
+ 
   }
 
 /* end UserAppSM_Idle() */
