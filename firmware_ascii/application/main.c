@@ -63,41 +63,36 @@ void clear_bit(void)
 
 
 
-
-
-
-
-
 void main(void)
 {
   u8 u8MyData=0;
   G_u32SystemFlags |= _SYSTEM_INITIALIZING;
-clear_bit();
-set_bit();
+	clear_bit();
+	set_bit();
 
 
 
 
-u8 u8Test=0xA5;
-u8*pu8Example;
-u32 u32Test=0x0000ffff;
-u32*pu32Example;
-pu8Example=&u8Test;
-pu32Example=&u32Test;
-*pu8Example+=1;
-(*pu32Example)++;
-pu8Example++;
-*pu32Example++; 
+	u8 u8Test=0xA5;
+	u8*pu8Example;
+	u32 u32Test=0x0000ffff;
+	u32*pu32Example;
+	pu8Example=&u8Test;
+	pu32Example=&u32Test;
+	*pu8Example+=1;
+	(*pu32Example)++;
+	pu8Example++;
+	*pu32Example++; 
 
 
 
-u8 u8CurrentServer;
-ServerType sServer1;
-ServerType* psServerParser;
+	u8 u8CurrentServer;
+	ServerType sServer1;
+	ServerType* psServerParser;
 
-psServerParser = &sServer1;
-sServer1.u8ServerNumber = 18;
-u8CurrentServer = psServerParser->u8ServerNumber;
+	psServerParser = &sServer1;
+	sServer1.u8ServerNumber = 18;
+	u8CurrentServer = psServerParser->u8ServerNumber;
 
 
 
@@ -131,8 +126,8 @@ u8CurrentServer = psServerParser->u8ServerNumber;
   /* Application initialization */
 
   UserApp1Initialize();
-  UserApp2Initialize();
-  UserApp3Initialize();
+  //UserApp2Initialize();
+  //UserApp3Initialize();
 
   
   /* Exit initialization */
@@ -162,8 +157,8 @@ u8CurrentServer = psServerParser->u8ServerNumber;
 
     /* Applications */
     UserApp1RunActiveState();
-    UserApp2RunActiveState();
-    UserApp3RunActiveState();
+    //UserApp2RunActiveState();
+    //UserApp3RunActiveState();
     
     /* System sleep*/
    // HEARTBEAT_OFF();

@@ -52,6 +52,10 @@ extern volatile u32 G_u32ApplicationFlags;             /* From main.c */
 extern volatile u32 G_u32SystemTime1ms;                /* From board-specific source file */
 extern volatile u32 G_u32SystemTime1s;                 /* From board-specific source file */
 
+extern u8 G_au8DebugScanfBuffer[];  /* From debug.c */
+extern u8 G_u8DebugScanfCharCount;  /* From debug.c */
+
+
 
 /***********************************************************************************************************************
 Global variable definitions with scope limited to this local application.
@@ -87,6 +91,9 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
+  PWMAudioOff(BUZZER1);
+
+  
   
   /* If good initialization, set state to Idle */
   if( 1 )
@@ -134,66 +141,116 @@ State Machine Function Definitions
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Wait for ??? */
-/* Wait for a message to be queued */
-static void UserApp1SM_Idle(void)
+
+  /* Wait for a message to be queued */
+  static void UserApp1SM_Idle(void)
 {
- static u16 u16TimerCounter=0;
-  static u8 u8LedNo=0;
-  static u16 u16TimeCounterLimit_Ms=2000;
+  static u32 u32CounterTime=0;
+  static u16 u16TimerCounter=0;
+  static u8 u8LedNo=0;//led number
+  static u8 UserApp_CursorPosition=LINE1_END_ADDR;
+  static u8 UserApp_au8MyName[]="       lu yan       ";
+  static bool bPressed=FALSE;
+  static u8 u8Comfirm=0;
 
+
+  u32CounterTime++;
   u16TimerCounter++;
-
-  if(u16TimerCounter==u16TimeCounterLimit_Ms)
-  {
-    u8LedNo++;
-    u16TimerCounter=0;
-    u16TimeCounterLimit_Ms=u16TimeCounterLimit_Ms/2;
+ 
+  if(WasButtonPressed(BUTTON3))
+	{
+		ButtonAcknowledge(BUTTON3);
+		bPressed=TRUE;
+		u8Comfirm++;
+	}
   
-    switch(u8LedNo)
-    {
-    case 1:
-      LedPWM(WHITE,LED_PWM_100);
-      break;
-    
-    case 2:
-      LedPWM(PURPLE,LED_PWM_70);
-      break;
-    
-    case 3:
-      LedPWM(BLUE,LED_PWM_50);
-      break;
-    
-    case 4:
-      LedPWM(CYAN,LED_PWM_30);
-      break;
-    
-    case 5:
-      LedPWM(GREEN,LED_PWM_10);
-      break;
-    
-    case 6:
-      LedOff(WHITE);
-      LedOff(PURPLE);
-      LedOff(BLUE);
-      LedOff(CYAN);
-      LedOff(GREEN);
-      u8LedNo=0;
-      u16TimeCounterLimit_Ms=2000;
-      break;
-    }
+  if(u8Comfirm==1)
+  {
+	  if(u32CounterTime==500)
+	  {
+		 UserApp_CursorPosition--;
+		 u32CounterTime=0;
+		 LCDMessage(UserApp_CursorPosition,UserApp_au8MyName);
+		 if(UserApp_CursorPosition==LINE1_START_ADDR)
+		 {	
+			UserApp_CursorPosition=LINE1_END_ADDR;
+		 }
+		 bPressed=TRUE;
+		 }	
+		   
+		if(u16TimerCounter==500)
+		{
+		  u8LedNo++;
+		  u16TimerCounter=0;
+		}
+
+		switch(u8LedNo)
+		{
+		  case 1:
+		  LedOn(WHITE);
+		  PWMAudioOn(BUZZER1);
+		  PWMAudioSetFrequency(BUZZER1,100);
+		  break;
+		  case 2:
+		  LedOn(PURPLE);
+		  PWMAudioOn(BUZZER1);
+		  PWMAudioSetFrequency(BUZZER1,200);
+		  break;
+		  case 3:
+		  LedOn(BLUE);
+		  PWMAudioOn(BUZZER1);
+		  PWMAudioSetFrequency(BUZZER1,300);
+		  break;
+		  case 4:
+		  LedOn(CYAN);
+		  PWMAudioOn(BUZZER1);
+		  PWMAudioSetFrequency(BUZZER1,400);
+		  break;
+		  case 5:
+		  LedOn(GREEN);
+		  PWMAudioOn(BUZZER1);
+		  PWMAudioSetFrequency(BUZZER1,500);
+		  break;
+		  case 6:
+		  LedOn(YELLOW);
+		  PWMAudioOn(BUZZER1);
+		  PWMAudioSetFrequency(BUZZER1,600);
+		  break;
+		  case 7:
+		  LedOn(ORANGE);
+		  PWMAudioOn(BUZZER1);
+		  PWMAudioSetFrequency(BUZZER1,800);
+		  break;
+		  case 8:
+		  LedOn(RED);
+		  PWMAudioOn(BUZZER1);
+		  PWMAudioSetFrequency(BUZZER1,900);
+		  break;
+		  case 9:
+		  LedOff(WHITE);
+		  LedOff(PURPLE);
+		  LedOff(BLUE);
+		  LedOff(CYAN);
+		  LedOff(GREEN);
+		  LedOff(YELLOW);
+		  LedOff(ORANGE);
+		  LedOff(RED);
+		  u8LedNo=0;
+		  break;
+		  default:
+		  break; 
+		}
   }
+} /* end UserAppSM_Idle() */
+
+ 
 
 
-  }
-
-/* end UserAppSM_Idle() */
-
-
-    
+		
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Handle an error */
-static void UserApp1SM_Error(void)          
+static void UserApp1SM_Error(void)      
 {
  
 } /* end UserApp1SM_Error() */
