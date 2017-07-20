@@ -42,7 +42,13 @@ All Global variable names shall start with "G_UserApp1"
 ***********************************************************************************************************************/
 /* New variables */
 volatile u32 G_u32UserApp1Flags;                       /* Global state flags */
-
+LedCommandType aeDemoList[]={{RED,1000,TRUE,LED_PWM_100},
+                               {RED,6000,FALSE,LED_PWM_0},
+							   {GREEN,3000,TRUE,LED_PWM_100},
+							   {GREEN,9000,FALSE,LED_PWM_0},
+							    {WHITE,3000,TRUE,LED_PWM_100},
+								{CYAN,3000,TRUE,LED_PWM_100}
+							   };
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Existing variables (defined in other files -- should all contain the "extern" keyword) */
@@ -91,8 +97,9 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
-  PWMAudioOff(BUZZER1);
-
+	LedOff(RED);
+	LedOff(GREEN);
+	LCDMessage(LINE1_START_ADDR," 0 0  0 0  0 0  0 0 ");
   
   
   /* If good initialization, set state to Idle */
@@ -145,108 +152,56 @@ State Machine Function Definitions
   /* Wait for a message to be queued */
   static void UserApp1SM_Idle(void)
 {
-  static u32 u32CounterTime=0;
-  static u16 u16TimerCounter=0;
-  static u8 u8LedNo=0;//led number
-  static u8 UserApp_CursorPosition=LINE1_END_ADDR;
-  static u8 UserApp_au8MyName[]="       lu yan       ";
-  static bool bPressed=FALSE;
-  static u8 u8Comfirm=0;
-
-
-  u32CounterTime++;
-  u16TimerCounter++;
- 
-  if(WasButtonPressed(BUTTON3))
-	{
-		ButtonAcknowledge(BUTTON3);
-		bPressed=TRUE;
-		u8Comfirm++;
-	}
+ static u32 u32Time=0;
+ static u8 u8Index;
+ static u8 au8LedAddr[]={1,3,6,8,11,13,16,18};
+ u8 u8Counter[4]={'0','0','0','0'};
   
-  if(u8Comfirm==1)
-  {
-	  if(u32CounterTime==500)
-	  {
-		 UserApp_CursorPosition--;
-		 u32CounterTime=0;
-		 LCDMessage(UserApp_CursorPosition,UserApp_au8MyName);
-		 if(UserApp_CursorPosition==LINE1_START_ADDR)
-		 {	
-			UserApp_CursorPosition=LINE1_END_ADDR;
-		 }
-		 bPressed=TRUE;
-		 }	
-		   
-		if(u16TimerCounter==500)
-		{
-		  u8LedNo++;
-		  u16TimerCounter=0;
-		}
+ u32Time++;
+ 
+ //time=0 every ten seconds
+ if(u32Time == 10000)
+ {
+    u32Time=0;
+ }
+ 
+ //display time in Line2
+ u8Counter[0]=0x30+u32Time/1000;
+ u8Counter[1]=0x30+u32Time%1000/100; 
+ u8Counter[2]=0x30+u32Time%100/10; 
+ u8Counter[3]=0x30+u32Time%10; 
 
-		switch(u8LedNo)
-		{
-		  case 1:
-		  LedOn(WHITE);
-		  PWMAudioOn(BUZZER1);
-		  PWMAudioSetFrequency(BUZZER1,100);
-		  break;
-		  case 2:
-		  LedOn(PURPLE);
-		  PWMAudioOn(BUZZER1);
-		  PWMAudioSetFrequency(BUZZER1,200);
-		  break;
-		  case 3:
-		  LedOn(BLUE);
-		  PWMAudioOn(BUZZER1);
-		  PWMAudioSetFrequency(BUZZER1,300);
-		  break;
-		  case 4:
-		  LedOn(CYAN);
-		  PWMAudioOn(BUZZER1);
-		  PWMAudioSetFrequency(BUZZER1,400);
-		  break;
-		  case 5:
-		  LedOn(GREEN);
-		  PWMAudioOn(BUZZER1);
-		  PWMAudioSetFrequency(BUZZER1,500);
-		  break;
-		  case 6:
-		  LedOn(YELLOW);
-		  PWMAudioOn(BUZZER1);
-		  PWMAudioSetFrequency(BUZZER1,600);
-		  break;
-		  case 7:
-		  LedOn(ORANGE);
-		  PWMAudioOn(BUZZER1);
-		  PWMAudioSetFrequency(BUZZER1,800);
-		  break;
-		  case 8:
-		  LedOn(RED);
-		  PWMAudioOn(BUZZER1);
-		  PWMAudioSetFrequency(BUZZER1,900);
-		  break;
-		  case 9:
-		  LedOff(WHITE);
-		  LedOff(PURPLE);
-		  LedOff(BLUE);
-		  LedOff(CYAN);
-		  LedOff(GREEN);
-		  LedOff(YELLOW);
-		  LedOff(ORANGE);
-		  LedOff(RED);
-		  u8LedNo=0;
-		  break;
-		  default:
-		  break; 
-		}
+ 
+ //display once every second
+ if(u32Time%100 == 0)
+  {
+	
+ 	LCDMessage(LINE2_START_ADDR,u8Counter);
   }
+ 
+ //Led display and LCD display '0'and'1'
+  for(u8Index=0;u8Index<6;u8Index++)
+ {
+	if(u32Time==aeDemoList[u8Index].u32Time)
+	{
+	  LedPWM(aeDemoList[u8Index].eLed, aeDemoList[u8Index].eCurrentRate);
+	  
+	  if(aeDemoList[u8Index].bOn==TRUE)
+	  {
+		LCDMessage(LINE1_START_ADDR+au8LedAddr[aeDemoList[u8Index].eLed],"1");
+	  }                                                                                                          
+	  else
+	  {
+		LCDMessage(LINE1_START_ADDR+au8LedAddr[aeDemoList[u8Index].eLed],"0");
+	  }
+	}	
+ }
 } /* end UserAppSM_Idle() */
 
  
 
 
-		
+	
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Handle an error */
