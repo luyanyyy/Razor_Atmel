@@ -42,13 +42,7 @@ All Global variable names shall start with "G_UserApp1"
 ***********************************************************************************************************************/
 /* New variables */
 volatile u32 G_u32UserApp1Flags;                       /* Global state flags */
-LedCommandType aeDemoList[]={{RED,1000,TRUE,LED_PWM_100},
-                               {RED,6000,FALSE,LED_PWM_0},
-							   {GREEN,3000,TRUE,LED_PWM_100},
-							   {GREEN,9000,FALSE,LED_PWM_0},
-							    {WHITE,3000,TRUE,LED_PWM_100},
-								{CYAN,3000,TRUE,LED_PWM_100}
-							   };
+
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Existing variables (defined in other files -- should all contain the "extern" keyword) */
@@ -97,10 +91,10 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
-	LedOff(RED);
-	LedOff(GREEN);
-	LCDMessage(LINE1_START_ADDR," 0 0  0 0  0 0  0 0 ");
-  
+    LedOff(PURPLE);  
+
+	
+
   
   /* If good initialization, set state to Idle */
   if( 1 )
@@ -150,59 +144,32 @@ State Machine Function Definitions
 /* Wait for ??? */
 
   /* Wait for a message to be queued */
-  static void UserApp1SM_Idle(void)
+static void UserApp1SM_Idle(void)
 {
- static u32 u32Time=0;
- static u8 u8Index;
- static u8 au8LedAddr[]={1,3,6,8,11,13,16,18};
- u8 u8Counter[4]={'0','0','0','0'};
-  
- u32Time++;
- 
- //time=0 every ten seconds
- if(u32Time == 10000)
- {
-    u32Time=0;
- }
- 
- //display time in Line2
- u8Counter[0]=0x30+u32Time/1000;
- u8Counter[1]=0x30+u32Time%1000/100; 
- u8Counter[2]=0x30+u32Time%100/10; 
- u8Counter[3]=0x30+u32Time%10; 
-
- 
- //display once every second
- if(u32Time%100 == 0)
-  {
+	static u16 u16Counter=0;//time counter
+	static LedRateType eLedDutyLevel=LED_PWM_0;
 	
- 	LCDMessage(LINE2_START_ADDR,u8Counter);
-  }
- 
- //Led display and LCD display '0'and'1'
-  for(u8Index=0;u8Index<6;u8Index++)
- {
-	if(u32Time==aeDemoList[u8Index].u32Time)
+	u16Counter++;
+	
+	if(u16Counter==1000)//40ms
 	{
-	  LedPWM(aeDemoList[u8Index].eLed, aeDemoList[u8Index].eCurrentRate);
-	  
-	  if(aeDemoList[u8Index].bOn==TRUE)
-	  {
-		LCDMessage(LINE1_START_ADDR+au8LedAddr[aeDemoList[u8Index].eLed],"1");
-	  }                                                                                                          
-	  else
-	  {
-		LCDMessage(LINE1_START_ADDR+au8LedAddr[aeDemoList[u8Index].eLed],"0");
-	  }
-	}	
- }
+		LedPWM(PURPLE,eLedDutyLevel);
+		u16Counter=0;
+		if(eLedDutyLevel<LED_PWM_PERIOD)//up
+		{
+			LedOn(PURPLE);
+			eLedDutyLevel++;
+		}
+		else//down
+		{
+			LedOn(PURPLE);
+			if(eLedDutyLevel>LED_PWM_0)
+			{
+				eLedDutyLevel--;
+			}
+		}
+	}
 } /* end UserAppSM_Idle() */
-
- 
-
-
-	
-
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Handle an error */
 static void UserApp1SM_Error(void)      
