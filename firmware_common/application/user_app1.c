@@ -146,65 +146,138 @@ State Machine Function Definitions
   /* Wait for a message to be queued */
 static void UserApp1SM_Idle(void)
 {
-	static u8 u8EnterIn[]={0};
-	static u8 u8Judge[100];
-	static u8 u8Index=0;
-	static u32 u32Counter=0;
-  
-  	if(G_u8DebugScanfCharCount>=1)//make a judgement every time
-	{
-		DebugScanf(u8EnterIn);
-		u8Judge[u8Index]=u8EnterIn[0];//Save the input values in an array
-		
-		if(u8Index>=1)
-		{
-			if(u8Judge[u8Index-1]=='l')
-			{
-				if(u8Judge[u8Index]=='Y')
-				{
-					
-						u32Counter++;
-						DebugLineFeed();
-						
-						if(u32Counter<10)
-						{
-							DebugPrintf("***");
-							DebugLineFeed();
-							DebugPrintf("*");
-							DebugPrintNumber(u32Counter);//output number
-							DebugPrintf("*");
-							DebugLineFeed();
-							DebugPrintf("***");
-						}
-						
-						if(u32Counter>=10&&u32Counter<100)
-						{
-							DebugPrintf("****");
-							DebugLineFeed();
-							DebugPrintf("*");
-							DebugPrintNumber(u32Counter);//output number
-							DebugPrintf("*");
-							DebugLineFeed();
-							DebugPrintf("****");
-						}
-						
-						if(u32Counter>=100&&u32Counter<1000)
-						{
-							DebugPrintf("*****");
-							DebugLineFeed();
-							DebugPrintf("*");
-							DebugPrintNumber(u32Counter);//output number
-							DebugPrintf("*");
-							DebugLineFeed();
-							DebugPrintf("*****");
-						}
-				}
-			}
-		}
-		
-		u8Index++;
-	}
+  static u8 u8RealPassword[]={0,0,0,0,0,0};
+  static u8 u8UserInput[]={0,0,0,0,0,0};
+  static u8 u8UserPassword[]={0,0,0,0,0,0};
+  static u8 u8Index=0;
+  static u8 u8Comfirm=0;
+  static u16 u16Counter=0;
+  static bool bPressed=FALSE;
+  static bool bIsOk=TRUE;
+  u8 u8TempIndex;
 
+  if(G_u8DebugScanfCharCount<=6)
+  {
+    DebugScanf(u8UserInput);
+    DebugLineFeed();
+    for(u8Index=0;u8Index<=5;u8Index++)
+    u8RealPassword[u8Index]=u8UserInput[u8Index];
+  }
+
+  if(WasButtonPressed(BUTTON3))
+  {
+    ButtonAcknowledge(BUTTON3);	
+    ButtonAcknowledge(BUTTON2);
+    ButtonAcknowledge(BUTTON1);
+    ButtonAcknowledge(BUTTON0);
+    u8Comfirm++;
+    LedOff(WHITE);
+    LedOff(PURPLE);
+  }
+
+  if(u8Comfirm==2)
+  {
+    for(u8TempIndex=0;u8TempIndex<6;u8TempIndex++)
+    {
+      if(u8RealPassword[u8TempIndex]!=
+       u8UserPassword[u8TempIndex])
+    {
+      bIsOk=FALSE;
+      break;
+    }
+    }
+
+    if(bIsOk)
+    {
+      LedOn(WHITE);
+      LedOff(PURPLE);
+      bIsOk=TRUE;
+    }
+    else
+    {
+      LedOff(WHITE);
+      LedOn(PURPLE);
+      bIsOk=TRUE;
+    }
+    LedOff(BLUE);
+    u8Comfirm=0;
+    u8Index=0;
+    
+    for(u8Index=0;u8Index<6;u8Index++)
+    {
+      u8UserPassword[u8Index]=0;
+    }
+    u8Index=0;
+    }
+
+  if(u8Comfirm==1)
+  {
+    LedOn(BLUE);
+
+    if(u8Index<6)
+    {
+      if(WasButtonPressed(BUTTON0))
+    {
+      ButtonAcknowledge(BUTTON0);
+      LedOn(RED);
+      bPressed=TRUE;
+      u8UserPassword[u8Index]=1;
+      u8Index++;
+      PWMAudioSetFrequency(BUZZER1,1000);
+      PWMAudioOn(BUZZER1);
+    }
+
+    if(WasButtonPressed(BUTTON1))
+    {
+      ButtonAcknowledge(BUTTON1);
+      LedOn(RED);
+      bPressed=TRUE;
+      u8UserPassword[u8Index]=2;
+      u8Index++;
+      PWMAudioSetFrequency(BUZZER1,1000);
+      PWMAudioOn(BUZZER1);
+    }
+
+    if(WasButtonPressed(BUTTON2))
+    {
+      ButtonAcknowledge(BUTTON2);
+      LedOn(RED);
+      bPressed=TRUE;
+      u8UserPassword[u8Index]=3;
+      u8Index++;
+      PWMAudioSetFrequency(BUZZER1,1000);
+      PWMAudioOn(BUZZER1);
+    }
+
+    if(bPressed==TRUE)
+    {
+      u16Counter++;
+
+    if(u16Counter==100)
+    {
+      u16Counter=0;
+      LedOff(RED);
+      bPressed=FALSE;
+      PWMAudioOff(BUZZER1);
+    }
+    }
+    }
+    else
+    {
+    if(bPressed==TRUE)
+    {
+      u16Counter++;
+
+      if(u16Counter==100)
+      {
+      u16Counter=0;
+      LedOff(RED);
+      bPressed=FALSE;
+      PWMAudioOff(BUZZER1);
+      }
+    }
+    }
+  }
 } /* end UserAppSM_Idle() */
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Handle an error */
