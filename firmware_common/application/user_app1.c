@@ -146,29 +146,65 @@ State Machine Function Definitions
   /* Wait for a message to be queued */
 static void UserApp1SM_Idle(void)
 {
-	static u16 u16Counter=0;//time counter
-	static LedRateType eLedDutyLevel=LED_PWM_0;
-	
-	u16Counter++;
-	
-	if(u16Counter==1000)//40ms
+	static u8 u8EnterIn[]={0};
+	static u8 u8Judge[100];
+	static u8 u8Index=0;
+	static u32 u32Counter=0;
+  
+  	if(G_u8DebugScanfCharCount>=1)//make a judgement every time
 	{
-		LedPWM(PURPLE,eLedDutyLevel);
-		u16Counter=0;
-		if(eLedDutyLevel<LED_PWM_PERIOD)//up
+		DebugScanf(u8EnterIn);
+		u8Judge[u8Index]=u8EnterIn[0];//Save the input values in an array
+		
+		if(u8Index>=1)
 		{
-			LedOn(PURPLE);
-			eLedDutyLevel++;
-		}
-		else//down
-		{
-			LedOn(PURPLE);
-			if(eLedDutyLevel>LED_PWM_0)
+			if(u8Judge[u8Index-1]=='l')
 			{
-				eLedDutyLevel--;
+				if(u8Judge[u8Index]=='Y')
+				{
+					
+						u32Counter++;
+						DebugLineFeed();
+						
+						if(u32Counter<10)
+						{
+							DebugPrintf("***");
+							DebugLineFeed();
+							DebugPrintf("*");
+							DebugPrintNumber(u32Counter);//output number
+							DebugPrintf("*");
+							DebugLineFeed();
+							DebugPrintf("***");
+						}
+						
+						if(u32Counter>=10&&u32Counter<100)
+						{
+							DebugPrintf("****");
+							DebugLineFeed();
+							DebugPrintf("*");
+							DebugPrintNumber(u32Counter);//output number
+							DebugPrintf("*");
+							DebugLineFeed();
+							DebugPrintf("****");
+						}
+						
+						if(u32Counter>=100&&u32Counter<1000)
+						{
+							DebugPrintf("*****");
+							DebugLineFeed();
+							DebugPrintf("*");
+							DebugPrintNumber(u32Counter);//output number
+							DebugPrintf("*");
+							DebugLineFeed();
+							DebugPrintf("*****");
+						}
+				}
 			}
 		}
+		
+		u8Index++;
 	}
+
 } /* end UserAppSM_Idle() */
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Handle an error */
